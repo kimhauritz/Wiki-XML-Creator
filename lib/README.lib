@@ -1,0 +1,9 @@
+The files:
+filterbuilder.jar  
+htmlparser.jar  
+htmllexer.jar       
+sitecapturer.jar
+thumbelina.jar
+
+Is copied from the project HTMLparser
+http://htmlparser.sourceforge.net/
