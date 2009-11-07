@@ -55,6 +55,8 @@ public class WikiPage {
 	protected String topPageRef = "";
 	protected String nextPageRef = "";
 	protected String prevPageRef = "";
+	protected int pgId = 0;
+	protected int revId = 0;
 	
 	public WikiPage()
 	{
@@ -66,6 +68,12 @@ public class WikiPage {
 	{
 		title = t;	
 		textList = new ArrayList<String>();
+	}
+	
+	public void setIds(int p, int r)
+	{
+		pgId = p;
+		revId = r;	
 	}
 	
 	public void addText(String t)
@@ -134,9 +142,19 @@ public class WikiPage {
 
 		
 		String res = "<page>\n<title>" + title + "</title>\n" + 
-		"<revision><timestamp>2001-01-15T13:15:00Z</timestamp><contributor><username>WikiXMLCreator</username></contributor>" +
-		"<comment></comment>\n"
-		+"<text>\n" + textStr + "\n</text></revision>\n</page>";
+	    "<id>" + pgId + "</id>" +
+	    "<revision><id>" + revId + "</id>" +
+	      "<timestamp>2009-08-29T09:34:16Z</timestamp>" +
+	      "<contributor>" +
+	       "<username>Chreod</username>" +
+	        "<id>7335409</id>" +
+	      "</contributor>" +
+	      "<minor/>" +
+	      "<comment>mainly grammatical changes</comment>" +
+	      
+//		"<revision><timestamp>2001-01-15T13:15:00Z</timestamp><contributor><username>WikiXMLCreator</username></contributor>" +
+//		"<comment></comment>\n" +
+		"<text xml:space=\"preserve\">\n" + textStr + "\n</text></revision>\n</page>";
 		
 		return res;
 

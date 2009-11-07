@@ -2,6 +2,7 @@ package wikiXmlCreator;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class Converter {
@@ -67,11 +68,21 @@ public class Converter {
 		if(!noMainPage)
 			createMainPage();
 		
+		Random generator = new Random();
+		
 		ListIterator listIterator = wikiPageList.listIterator();
 
+		int pgId, revId;
+		int Lower_Bound = 265795;
+		int Upper_Bound = 310689540;
 		while (listIterator.hasNext()) {
 			WikiPage p = (WikiPage) listIterator.next();
-
+			
+			pgId = (int) (Lower_Bound + generator.nextDouble() * ( Upper_Bound - Lower_Bound) );
+			revId = (int) (Lower_Bound + generator.nextDouble() * ( Upper_Bound - Lower_Bound) );
+			
+			p.setIds(pgId, revId);
+			
 			System.out.println(p.toXML());
 		}
 

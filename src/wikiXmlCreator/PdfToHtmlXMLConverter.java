@@ -61,12 +61,12 @@ public class PdfToHtmlXMLConverter extends Converter {
 					if (splitAfterNumPages > 1) {
 						LastPageNum = ((i + 2) - splitAfterNumPages);
 						// Create title in the form of TITLE_Page_X_to_Y
-						currentWikiPage.setTitle(DocumentTitle + "_Page_"
-								+ LastPageNum + "_to_" + (i + 1));
+						currentWikiPage.setTitle(DocumentTitle + " Page "
+								+ LastPageNum + " to " + (i + 1));
 					} else {
 						LastPageNum = (i + 1);
 						// Create title in the form of TITLE_Page_X
-						currentWikiPage.setTitle(DocumentTitle + "_Page_"
+						currentWikiPage.setTitle(DocumentTitle + " Page "
 								+ (i + 1));
 					}
 
@@ -120,7 +120,7 @@ public class PdfToHtmlXMLConverter extends Converter {
 									&& ChapterNum > 0) {
 								// Create title in the form of TITLE_Page_X
 								currentWikiPage.setTitle(DocumentTitle
-										+ "_Chapter_" + (ChapterNum++));
+										+ " Chapter " + (ChapterNum++));
 
 								wikiPageList.add(currentWikiPage);
 								currentWikiPage = new WikiPage();
@@ -130,7 +130,7 @@ public class PdfToHtmlXMLConverter extends Converter {
 								// Add preface and other stuff to chapter 1
 								ChapterNum++;
 							}
-							currentTextLine = "==" + elText.getTextContent()
+							currentTextLine = " \n==" + elText.getTextContent()
 									+ "==\n\n";
 
 							// Only add chapter text when we split by chapter
@@ -192,16 +192,16 @@ public class PdfToHtmlXMLConverter extends Converter {
 		if (splitBy == PdfToHtmlXMLConverter.SPLIT_BY_PAGE
 				&& splitAfterNumPages > 1) {
 			// Create title in the form of TITLE_Page_X_to_Y
-			currentWikiPage.setTitle(DocumentTitle + "_Page_" + LastPageNum
+			currentWikiPage.setTitle(DocumentTitle + " Page " + LastPageNum
 					+ "_to_" + i);
 		} else {
 			// Create title in the form of TITLE_Page_X
-			currentWikiPage.setTitle(DocumentTitle + "_Page_" + i);
+			currentWikiPage.setTitle(DocumentTitle + " Page " + i);
 		}
 
 		if (splitBy == PdfToHtmlXMLConverter.SPLIT_BY_CHAPTER) {
 			// Create title in the form of TITLE_Page_X
-			currentWikiPage.setTitle(DocumentTitle + "_Chapter_" + ChapterNum);
+			currentWikiPage.setTitle(DocumentTitle + " Chapter " + ChapterNum);
 
 		}
 
