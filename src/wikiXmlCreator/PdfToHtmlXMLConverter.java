@@ -33,9 +33,11 @@ public class PdfToHtmlXMLConverter {
 	private int SkipLinesBottom = 0;
 	private Pattern ChapterRegX = null;
 	private boolean dropLinks = false;
+	private boolean noMainPage = false;
 	private int splitBy = PdfToHtmlXMLConverter.SPLIT_BY_PAGE;
 	private int splitAfterNumPages = 1;
-
+	private String DocumentTitle = "";
+	
 	private ArrayList<WikiPage> wikiPageList;
 
 	public PdfToHtmlXMLConverter() {
@@ -58,6 +60,10 @@ public class PdfToHtmlXMLConverter {
 		dropLinks = d;
 	}
 
+	public void setNoMainPage(boolean nmp) {
+		noMainPage = nmp;
+	}
+	
 	public void setSplitBy(int s) {
 		splitBy = s;
 	}
@@ -66,6 +72,10 @@ public class PdfToHtmlXMLConverter {
 		// minimum one page
 		if (num > 0)
 			splitAfterNumPages = num;
+	}
+	
+	public void setDocumentTitle(String t) {
+		DocumentTitle = t;
 	}
 
 	public void convert() {
@@ -98,12 +108,12 @@ public class PdfToHtmlXMLConverter {
 					if (splitAfterNumPages > 1) {
 						LastPageNum = ((i + 2) - splitAfterNumPages);
 						// Create title in the form of TITLE_Page_X_to_Y
-						currentWikiPage.setTitle("_Page_" + LastPageNum
+						currentWikiPage.setTitle(DocumentTitle + "_Page_" + LastPageNum
 								+ "_to_" + (i + 1));
 					} else {
 						LastPageNum = (i + 1);
 						// Create title in the form of TITLE_Page_X
-						currentWikiPage.setTitle("_Page_" + (i + 1));
+						currentWikiPage.setTitle(DocumentTitle + "_Page_" + (i + 1));
 					}
 
 					wikiPageList.add(currentWikiPage);
@@ -154,7 +164,7 @@ public class PdfToHtmlXMLConverter {
 							if (splitBy == PdfToHtmlXMLConverter.SPLIT_BY_CHAPTER
 									&& ChapterNum > 0) {
 								// Create title in the form of TITLE_Page_X
-								currentWikiPage.setTitle("_Chapter_"
+								currentWikiPage.setTitle(DocumentTitle + "_Chapter_"
 										+ (ChapterNum++));
 
 								wikiPageList.add(currentWikiPage);
@@ -165,7 +175,11 @@ public class PdfToHtmlXMLConverter {
 								// Add preface and other stuff to chapter 1
 								ChapterNum++;
 							}
-							currentTextLine = elText.getTextContent() + "\n\n";
+							currentTextLine = "==" + elText.getTextContent() + "==\n\n";
+							
+							// Only add chapter text when we split by chapter and when we split by 1 page
+							if (!(splitBy == PdfToHtmlXMLConverter.SPLIT_BY_PAGE && splitAfterNumPages > 1))
+								currentWikiPage.setChapterText(elText.getTextContent());
 						} else {
 							// DEBUG
 							// System.out.print(elText.getTextContent() + "" );
@@ -220,15 +234,15 @@ public class PdfToHtmlXMLConverter {
 		if (splitBy == PdfToHtmlXMLConverter.SPLIT_BY_PAGE
 				&& splitAfterNumPages > 1) {
 			// Create title in the form of TITLE_Page_X_to_Y
-			currentWikiPage.setTitle("_Page_" + LastPageNum + "_to_" + i);
+			currentWikiPage.setTitle(DocumentTitle + "_Page_" + LastPageNum + "_to_" + i);
 		} else {
 			// Create title in the form of TITLE_Page_X
-			currentWikiPage.setTitle("_Page_" + i);
+			currentWikiPage.setTitle(DocumentTitle + "_Page_" + i);
 		}
 
 		if (splitBy == PdfToHtmlXMLConverter.SPLIT_BY_CHAPTER) {
 			// Create title in the form of TITLE_Page_X
-			currentWikiPage.setTitle("_Chapter_" + ChapterNum);
+			currentWikiPage.setTitle(DocumentTitle + "_Chapter_" + ChapterNum);
 
 		}
 
@@ -296,8 +310,46 @@ public class PdfToHtmlXMLConverter {
 
 		return false;
 	}
+	
+	private void createMainPage()
+	{
+		WikiPage mainPage = new WikiPage(DocumentTitle);
+		mainPage.addText("\n\n'''Index'''\n\n");
+		
+		for(int i = 0; i < wikiPageList.size() ; i++)
+		{
+			if(i == 0)
+			{
+				wikiPageList.get(i).setNextPageRef(wikiPageList.get(i+1).getTitle());
+				mainPage.setNextPageRef(wikiPageList.get(i).getTitle());
+				mainPage.setTopPageRef(DocumentTitle);
+			}
+			else if( i == wikiPageList.size()-1)
+			{
+				wikiPageList.get(i).setPrevPageRef(wikiPageList.get(i-1).getTitle());
+			}
+			else
+			{
+				wikiPageList.get(i).setPrevPageRef(wikiPageList.get(i-1).getTitle());
+				wikiPageList.get(i).setNextPageRef(wikiPageList.get(i+1).getTitle());
+			}
+			if(wikiPageList.get(i).getChapterText() != "")
+				mainPage.addText("* [[" + wikiPageList.get(i).getTitle() + "|" + wikiPageList.get(i).getChapterText() + "]]\n");
+			else
+				mainPage.addText("* [[" + wikiPageList.get(i).getTitle() + "]]\n");
+				
+			wikiPageList.get(i).setTopPageRef(DocumentTitle);
+		}
+		
+		wikiPageList.add(mainPage);
+	}
 
 	public void PrintAllPages() {
+		
+		//Drop main page.
+		if(!noMainPage)
+			createMainPage();
+		
 		ListIterator listIterator = wikiPageList.listIterator();
 
 		while (listIterator.hasNext()) {

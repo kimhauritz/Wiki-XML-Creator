@@ -48,12 +48,13 @@ import java.util.*;
 public class WikiPage {
 
 	protected String title;
+	protected String chapterText="";
 	protected ArrayList<String> textList;
 	
 	// Reference to the wiki page with a list of all pages
-	protected String topPageRef;
-	protected String nextPageRef;
-	protected String prevPageRef;
+	protected String topPageRef = "";
+	protected String nextPageRef = "";
+	protected String prevPageRef = "";
 	
 	public WikiPage()
 	{
@@ -77,6 +78,34 @@ public class WikiPage {
 		title = t;
 	}
 	
+	public void setChapterText(String t)
+	{
+		chapterText = t;
+	}
+	
+	public String getChapterText()
+	{
+		return chapterText;
+	}
+	
+	public String getTitle()
+	{
+		return title;
+	}
+	
+	public void setTopPageRef(String t)
+	{
+		topPageRef = t;
+	}
+	
+	public void setPrevPageRef(String t)
+	{
+		prevPageRef = t;
+	}
+	public void setNextPageRef(String t)
+	{
+		nextPageRef = t;
+	}
 	public String toXML()
 	{
 		
@@ -86,6 +115,23 @@ public class WikiPage {
 		
 		while(listIterator.hasNext())
 			textStr += listIterator.next();
+		
+		if(topPageRef != "" && prevPageRef != "" && nextPageRef != "")
+		{
+			textStr += "\n\n'''Navigation'''\n\n" + 
+			"[[" + prevPageRef + "|Prev]]  -  [[" + topPageRef + "|Main]]  -  [[" + nextPageRef + "|Next]]\n\n"; 
+		}
+		else if(topPageRef != "" && prevPageRef != "")
+		{
+			textStr += "\n\n'''Navigation'''\n\n" + 
+			"[[" + prevPageRef + "|Prev]]  -  [[" + topPageRef + "|Main]]\n\n"; 
+		}
+		else if(topPageRef != "" && nextPageRef != "")
+		{
+			textStr += "\n\n'''Navigation'''\n\n" + 
+			"[[" + topPageRef + "|Main]]  -  [[" + nextPageRef + "|Next]]\n\n"; 
+		}
+
 		
 		String res = "<page>\n<title>" + title + "</title>\n" + 
 		"<revision><timestamp>2001-01-15T13:15:00Z</timestamp><contributor><username>WikiXMLCreator</username></contributor>" +
