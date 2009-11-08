@@ -18,6 +18,7 @@ public class Converter {
 	protected int splitBy = PdfToHtmlXMLConverter.SPLIT_BY_PAGE;
 	protected int splitAfterNumPages = 1;
 	protected String DocumentTitle = "";
+	protected boolean abbyyFix = false;
 	
 	protected ArrayList<WikiPage> wikiPageList;
 	
@@ -58,6 +59,10 @@ public class Converter {
 			splitAfterNumPages = num;
 	}
 	
+	public void setAbbyyFix(boolean d) {
+		abbyyFix = d;
+	}
+	
 	public void setDocumentTitle(String t) {
 		DocumentTitle = t;
 	}
@@ -92,6 +97,7 @@ public class Converter {
 	{
 		WikiPage mainPage = new WikiPage(DocumentTitle);
 		mainPage.addText("\n\n'''Index'''\n\n");
+		mainPage.setCommentText("MainPg");
 		
 		for(int i = 0; i < wikiPageList.size() ; i++)
 		{

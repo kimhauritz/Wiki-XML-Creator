@@ -57,6 +57,7 @@ public class WikiPage {
 	protected String prevPageRef = "";
 	protected int pgId = 0;
 	protected int revId = 0;
+	protected String commentText = "";
 	
 	public WikiPage()
 	{
@@ -84,6 +85,11 @@ public class WikiPage {
 	public void setTitle(String t)
 	{
 		title = t;
+	}
+	
+	public void setCommentText(String t)
+	{
+		commentText = t;
 	}
 	
 	public void setChapterText(String t)
@@ -150,7 +156,7 @@ public class WikiPage {
 	        "<id>7335409</id>" +
 	      "</contributor>" +
 	      "<minor/>" +
-	      "<comment>mainly grammatical changes</comment>" +
+	      "<comment>" + commentText + "</comment>" +
 	      
 //		"<revision><timestamp>2001-01-15T13:15:00Z</timestamp><contributor><username>WikiXMLCreator</username></contributor>" +
 //		"<comment></comment>\n" +

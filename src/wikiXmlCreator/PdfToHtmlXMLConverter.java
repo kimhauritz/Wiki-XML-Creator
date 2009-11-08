@@ -97,10 +97,27 @@ public class PdfToHtmlXMLConverter extends Converter {
 
 						Element elText = (Element) nlText.item(j);
 
-						if (dropLinks) {
-							NodeList nl = elText.getElementsByTagName("a");
-							if (nl.getLength() > 0)
-								continue;
+						// Skip empty tags
+						if (elText.getTextContent().trim() == "")
+							continue;
+
+						if (dropLinks || abbyyFix) {
+							NodeList nlA = elText.getElementsByTagName("a");
+
+							// abbyyFix drop all nodes containing an anchor and
+							// a bold tag, and keeps the text from anchors
+							// without a bold tag
+							if (nlA.getLength() > 0) {
+								if (abbyyFix) {
+									Element elA = (Element) nlA.item(0);
+									NodeList nlAB = elA
+											.getElementsByTagName("b");
+
+									if (nlAB.getLength() > 0)
+										continue;
+								} else
+									continue;
+							}
 						}
 
 						curLeftIndent = Integer.parseInt(elText
@@ -113,9 +130,7 @@ public class PdfToHtmlXMLConverter extends Converter {
 						if (ChapterRegX != null
 								&& ChapterRegX.matcher(elText.getTextContent())
 										.matches()) {
-							// DEBUG
-							// System.out.print(elText.getTextContent() +
-							// "\n\n");
+
 							if (splitBy == PdfToHtmlXMLConverter.SPLIT_BY_CHAPTER
 									&& ChapterNum > 0) {
 								// Create title in the form of TITLE_Page_X
@@ -139,50 +154,48 @@ public class PdfToHtmlXMLConverter extends Converter {
 								currentWikiPage.setChapterText(elText
 										.getTextContent());
 						} else {
-							// DEBUG
-							// System.out.print(elText.getTextContent() + "" );
 
-							currentTextLine = elText.getTextContent();
+							// Check for bold tag
+							NodeList nlB = elText.getElementsByTagName("b");
+							// Check for italic tag
+							NodeList nlI = elText.getElementsByTagName("i");
+
+							// Bold and italic
+							if (nlB.getLength() > 0 && nlI.getLength() > 0) {
+								currentTextLine += "'''''"
+										+ elText.getTextContent() + "''''' ";
+								// Bold
+							} else if (nlB.getLength() > 0)
+								currentTextLine += "'''"
+										+ elText.getTextContent() + "''' ";
+							// Italic
+							else if (nlI.getLength() > 0)
+								currentTextLine += "''"
+										+ elText.getTextContent() + "'' ";
+							// PLAIN
+							else
+								currentTextLine += elText.getTextContent()
+										+ " ";
+
 						}
 
-						// System.out.print(curLeftIndent);
 						// By comparing the indentation we find if a new
 						// paragraph is started
 						if ((lastLeftIndent < curLeftIndent && lastLeftIndent != 0)) {
-							// DEBUG
-							// System.out.print("\n\n");
 							currentTextLine += "\n\n";
-							// System.out.print("\n  Indent\n");
 						}
 						// Compare the distance between lines and add a newline
 						// when it changes, this only happens when there is no
 						// indentation
 						else if ((lastTopDif < (curTopPos - lastTopPos) && lastTopDif != 0)) {
-							// DEBUG
-							// System.out.print("\n");
 							currentTextLine += "\n";
-							// System.out.print("\n  Top\n");
-
-							/**/
-							// 1
-							/*
-							 * / //2 /*
-							 */
 						}
 
-						// System.out.print(curTopPos - lastTopPos);
-						// System.out.print(" " + curTopPos);
-						// System.out.print( " " + elText.getTextContent() +
-						// "\n");
-
 						currentWikiPage.addText(currentTextLine);
-
+						currentTextLine = "";
 						lastLeftIndent = curLeftIndent;
 						lastTopDif = (curTopPos - lastTopPos);
 						lastTopPos = curTopPos;
-						// DEBUG
-						// System.out.println("Node: text ----------------------");
-						// System.out.print(elText.getTextContent());
 					}
 				}
 
